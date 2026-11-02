@@ -27,7 +27,7 @@ def install_dependencies():
             missing_packages.append(REQUIRED_PACKAGES[module])
     
     if missing_packages:
-        print(f"[*] جاري تثبيت المكاتب المفقودة: {', '.join(missing_packages)} ...")
+        print(f"[*] جاري تثبيت المكاتب المفقودة تلقائياً: {', '.join(missing_packages)} ...")
         try:
             subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "pip"], stdout=subprocess.DEVNULL)
             subprocess.check_call([sys.executable, "-m", "pip", "install", *missing_packages])
@@ -181,15 +181,14 @@ def start_mining(config):
     validate_config(config)
     manager = XMRigManager()
     
+    # التثبيت التلقائي الصامت بدون أسئلة
     if not manager.is_installed():
-        ans = input("XMRig not found. Download from official GitHub? (y/n): ")
-        if ans.lower() == 'y':
-            try:
-                manager.download_and_install()
-            except Exception as e:
-                print(f"[!] فشل تحميل وتثبيت XMRig: {e}")
-                sys.exit(1)
-        else:
+        print("[*] لم يتم العثور على أداة XMRig. جاري التحميل والتثبيت تلقائياً...")
+        try:
+            manager.download_and_install()
+            print("[+] تم تثبيت XMRig بنجاح.")
+        except Exception as e:
+            print(f"[!] فشل تحميل وتثبيت XMRig: {e}")
             sys.exit(1)
 
     logging.info("Starting BlueMiner")
